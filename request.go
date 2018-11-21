@@ -21,11 +21,11 @@ type OptBuilder func(page interface{}) *grequests.RequestOptions
 type Request struct {
 	method  string
 	opt     OptBuilder
-	url     UrlBuilder
-	params  ParamsBuilder
-	referer RefererBuilder
-	cookie  CookieBuilder
-	body    BodyBuilder
+	Url     UrlBuilder
+	Params  ParamsBuilder
+	Referer RefererBuilder
+	Cookie  CookieBuilder
+	Body    BodyBuilder
 }
 
 type PagedRequest struct {
@@ -46,28 +46,28 @@ func (req *PagedRequest) DoRequestReturnResult(page interface{}, result interfac
 }
 
 func (req *PagedRequest) DoRequest(page interface{}) (*grequests.Response, error) {
-	if req.url == nil {
+	if req.Url == nil {
 		log.Error("Do get request failed. Missing url. ")
 		return nil, errors.New("Do get request failed. Missing url. ")
 	}
 
-	url := req.url(page)
+	url := req.Url(page)
 	log.Debug(fmt.Sprintf("Do %s request.", req.method), zap.String("Url", url))
 	opt := &grequests.RequestOptions{}
 	if req.opt != nil {
 		opt = req.opt(page)
 	}
-	if req.cookie != nil {
-		opt.Cookies = req.cookie(page)
+	if req.Cookie != nil {
+		opt.Cookies = req.Cookie(page)
 	}
-	if req.referer != nil {
+	if req.Referer != nil {
 		if opt.Headers == nil {
 			opt.Headers = make(map[string]string)
 		}
-		opt.Headers["Referer"] = req.referer(page)
+		opt.Headers["Referer"] = req.Referer(page)
 	}
-	if req.body != nil {
-		opt.JSON = req.body(page)
+	if req.Body != nil {
+		opt.JSON = req.Body(page)
 	}
 	switch req.method {
 	case "GET":
