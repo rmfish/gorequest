@@ -18,7 +18,7 @@ type ParamsBuilder func(page interface{}) interface{}
 type UrlBuilder func(page interface{}) string
 type OptBuilder func(page interface{}) *grequests.RequestOptions
 
-type PagedRequest struct {
+type Request struct {
 	method  string
 	opt     OptBuilder
 	url     UrlBuilder
@@ -28,8 +28,12 @@ type PagedRequest struct {
 	body    BodyBuilder
 }
 
-func New(method string, opt OptBuilder, url UrlBuilder, params ParamsBuilder, referer RefererBuilder, cookie CookieBuilder, body BodyBuilder) *PagedRequest {
-	return &PagedRequest{method, opt, url, params, referer, cookie, body}
+type PagedRequest struct {
+	*Request
+}
+
+func NewPagedRequest(method string, opt OptBuilder, url UrlBuilder, params ParamsBuilder, referer RefererBuilder, cookie CookieBuilder, body BodyBuilder) *PagedRequest {
+	return &PagedRequest{&Request{method, opt, url, params, referer, cookie, body}}
 }
 
 func (req *PagedRequest) DoRequestReturnResult(page interface{}, result interface{}) error {
